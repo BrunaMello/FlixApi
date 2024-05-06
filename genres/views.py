@@ -1,15 +1,24 @@
+import json
 from django.http import JsonResponse
 from genres.models import Genre
+from django.views.decorators.csrf import csrf_exempt
 
 
+@csrf_exempt
 def genre_view(request):
-	genres = Genre.objects.all()
-	data = [{'id': genre.id, 'name': genre.name} for genre in genres]
+	if request.method == 'GET':
+		genres = Genre.objects.all()
+		data = [{'id': genre.id, 'name': genre.name} for genre in genres]
+		return JsonResponse(data, safe=False)
+	elif request.method == 'POST':
+		data = json.loads(request.body.decode('utf-8'))
+		new_genre = Genre(name=data['name'])
+		new_genre.save()
+		return JsonResponse(
+			data={'id': new_genre.id, 'name': new_genre.name},
+			status=201,
+		)
 
-	# linha acima mesma coisa da abaixo
-	# for genre in genres:
-	# 	data.append(
-	# 		{'id': genre.id, 'name': genre.name}
-	# 	)
 
-	return JsonResponse(data, safe=False)
+
+
