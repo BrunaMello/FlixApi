@@ -1,23 +1,15 @@
 from django.db.models import Avg
 from rest_framework import serializers
 
+from actors.serializers import ActorSerializer
+from genres.serializers import GenreSerializer
 from movies.models import Movie
 
 
 class MovieModelSerializer(serializers.ModelSerializer):
-	rate = serializers.SerializerMethodField(read_only=True)
-
 	class Meta:
 		model = Movie
 		fields = '__all__'
-
-	def get_rate(self, obj):
-		rate = obj.reviews.aggregate(Avg('stars'))['stars__avg']
-
-		if rate:
-			return round(rate, 1)
-
-		return None
 
 	def validate_release_date(self, value):
 		if value.year < 1900:
@@ -28,6 +20,24 @@ class MovieModelSerializer(serializers.ModelSerializer):
 		if len(value) > 500:
 			raise serializers.ValidationError('Comment must be below 200 characters long')
 		return value
+
+
+class MovieListDetailSerializer(serializers.ModelSerializer):
+	genre = GenreSerializer()
+	actors = ActorSerializer(many=True)
+	rate = serializers.SerializerMethodField(read_only=True)
+
+	class Meta:
+		model = Movie
+		fields = ['id', 'title', 'genre', 'actors', 'release_date', 'rate', 'resume']
+
+	def get_rate(self, obj):
+		rate = obj.reviews.aggregate(Avg('stars'))['stars__avg']
+
+		if rate:
+			return round(rate, 1)
+
+		return None
 
 
 class MovieStatsSerializer(serializers.Serializer):
