@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+import os.path
 from datetime import timedelta
 from pathlib import Path
 
@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-d!rs!64w#y(5ts5*_upu-fom2i7l&)_447dar&=n6b*g9nk=vq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -117,6 +117,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 STATIC_URL = 'static/'
 
 # Default primary key field type
@@ -131,6 +133,6 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-	"ACCESS_TOKEN_LIFETIME": timedelta(days=365),
-	"REFRESH_TOKEN_LIFETIME": timedelta(days=365 * 5),
+	"ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+	"REFRESH_TOKEN_LIFETIME": timedelta(days=7),
 }
